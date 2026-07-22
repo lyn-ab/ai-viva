@@ -5,14 +5,22 @@ import {
   mockAssignments,
   mockCourses,
   mockSections,
+  getCurrentUser,
 } from "@/lib/mock-data";
 import AssignmentDetail from "@/components/assignment/assignment-detail";
+import StudentAssignmentDetail from "@/components/assignment/student-assignment-detail";
 
 export default function AssignmentDetailPage() {
   const params = useParams<{
     id: string;
     assignmentId: string;
   }>();
+
+  // NOTE: confirm this against the real `Profile.role` union in
+  // mock-data.ts — branching on "student" here so an unrecognized/typo'd
+  // role value falls back to the teacher view rather than silently hiding
+  // a teacher's page.
+  const user = getCurrentUser();
 
   const course = mockCourses.find(
     (item) => item.id === params.id,
@@ -39,6 +47,16 @@ export default function AssignmentDetailPage() {
           The requested course or assignment could not be found.
         </p>
       </section>
+    );
+  }
+
+  if (user.role === "student") {
+    return (
+      <StudentAssignmentDetail
+        course={course}
+        assignment={assignment}
+        section={section}
+      />
     );
   }
 

@@ -152,16 +152,21 @@ export function ModalShell({
 export function ModalHeader({
   title,
   description,
+  icon,
   onClose,
 }: {
   title: string;
   description: string;
+  icon?: ReactNode;
   onClose: () => void;
 }) {
   return (
     <div className="flex items-start justify-between border-b px-6 py-5">
       <div>
-        <h2 className="text-xl font-semibold">{title}</h2>
+        <h2 className="flex items-center gap-2 text-xl font-semibold">
+          {icon && <span className="text-muted-foreground">{icon}</span>}
+          {title}
+        </h2>
         <p className="mt-1 text-sm text-muted-foreground">{description}</p>
       </div>
       <button

@@ -1,6 +1,6 @@
 import os
 import json
-from openai import OpenAI
+from google import genai
 
 
 def generate_rubric_for_student(submission_id, student_id, report_text,
@@ -78,16 +78,29 @@ RETURN FORMAT: valid JSON only, no markdown, no extra text:
   ]
 }}"""
 
-    client  = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
-    message = client.chat.completions.create(
-        model="gpt-4o-mini",
-        max_tokens=2048,
-        messages=[{"role": "user", "content": prompt}]
+    client = genai.Client(
+    api_key=os.environ.get("GEMINI_API_KEY")
     )
 
-    raw = message.choices[0].message.content.strip()
-    raw = raw.replace("```json", "").replace("```", "").strip()
-    parsed = json.loads(raw)
+    try:
+        response = client.models.generate_content(
+            model="gemini-flash-latest",
+            contents=prompt,
+        )
+    except Exception as e:
+      import traceback
+      traceback.print_exc()
+      raise e
+
+    raw = response.text.strip()
+
+    try:
+        raw = raw.replace("```json", "").replace("```", "").strip()
+        parsed = json.loads(raw)
+    except Exception as e:
+        print("❌ Gemini returned invalid JSON:")
+        print(raw)
+        raise Exception("Failed to parse Gemini response")
     items  = parsed.get("questions", [])[:num_questions]
 
     rubric = {}

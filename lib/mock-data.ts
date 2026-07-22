@@ -37,7 +37,7 @@ export type Assignment = {
   // added for the assignment builder form (optional → existing data stays valid):
   totalMarks?: number;
   description?: string;
-  requiredMaterials?: ("report" | "code" | "slides")[];
+  requiredMaterials?: string[];
   rubric?: RubricCriterion[];
   maxGroupSize?: number;
 };
